@@ -6,20 +6,24 @@ from sqlalchemy.pool import StaticPool
 
 from app.config import settings
 
-# Force testing environment
+# Force testing environment and SQLite shared in-memory test database before importing app components
 settings.ENVIRONMENT = "testing"
+settings.DATABASE_URL = "sqlite:///file:testdb?mode=memory&cache=shared&uri=true"
 
+import app.database as app_db
 from app.main import app
 from app.database import Base, get_db
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
-
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
+    settings.DATABASE_URL,
+    connect_args={"check_same_thread": False, "uri": True},
     poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Override application database engine and SessionLocal for background tasks in test suite
+app_db.engine = engine
+app_db.SessionLocal = TestingSessionLocal
 
 
 @pytest.fixture(scope="function")
