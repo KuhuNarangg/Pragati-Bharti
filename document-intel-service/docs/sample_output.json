@@ -1,0 +1,31 @@
+{
+  "document": {
+    "id": 1,
+    "filename": "clean_question_paper.pdf",
+    "doc_type": "question_paper",
+    "status": "completed",
+    "page_count": 2
+  },
+  "questions": [
+    {
+      "id": 101,
+      "question_number": "Q1",
+      "question_text": "What is the primary function of an operating system kernel?",
+      "question_type": "mcq",
+      "options": [
+        "A. Managing system resources and hardware communication",
+        "B. Providing user interface styling",
+        "C. Compiling source code to binary",
+        "D. Rendering web pages"
+      ],
+      "source_pages": [1],
+      "confidence": 0.98,
+      "extraction_status": "success",
+      "answer": {
+        "answer_text": "A. Managing system resources and hardware communication",
+        "match_confidence": 0.96,
+        "status": "matched"
+      }
+    }
+  ]
+}
