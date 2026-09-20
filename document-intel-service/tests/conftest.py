@@ -4,6 +4,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.config import settings
+
+# Force testing environment
+settings.ENVIRONMENT = "testing"
+
 from app.main import app
 from app.database import Base, get_db
 

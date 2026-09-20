@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List, Any
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class QuestionResponse(BaseModel):
@@ -16,8 +16,7 @@ class QuestionResponse(BaseModel):
     image_refs: Optional[Any] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AnswerResponse(BaseModel):
@@ -28,8 +27,7 @@ class AnswerResponse(BaseModel):
     match_confidence: Optional[float] = None
     status: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ReviewFlagResponse(BaseModel):
@@ -40,5 +38,4 @@ class ReviewFlagResponse(BaseModel):
     resolved: bool
     question: Optional[QuestionResponse] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
