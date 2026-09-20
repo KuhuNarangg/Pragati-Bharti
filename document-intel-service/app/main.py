@@ -1,4 +1,7 @@
-from fastapi import FastAPI, Depends, status
+import logging
+from fastapi import FastAPI, Depends, Request, status
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -7,6 +10,9 @@ import redis
 from app.config import settings
 from app.database import get_db
 from app.api.v1 import api_router
+from app.core.exceptions import ServiceException
+
+logger = logging.getLogger("app.main")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -24,6 +30,29 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Global Exception Handlers
+@app.exception_handler(ServiceException)
+async def service_exception_handler(request: Request, exc: ServiceException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail}
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": "Request validation failed", "errors": exc.errors()}
+    )
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled system error on {request.url}: {str(exc)}", exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "An unexpected internal server error occurred."}
+    )
 
 # Mount API routers under v1
 app.include_router(api_router)

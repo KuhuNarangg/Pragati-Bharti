@@ -1,11 +1,34 @@
 {
   "info": {
-    "name": "Document Intelligence Service API",
+    "name": "Document Intelligence Service API Collection",
+    "description": "Complete Postman Collection for Full Stack Developer Round 2 Assignment: Document Intelligence & Question Extraction Service",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "docId",
+      "value": "1"
+    },
+    {
+      "key": "groupId",
+      "value": "1"
+    },
+    {
+      "key": "questionId",
+      "value": "1"
+    }
+  ],
   "item": [
     {
-      "name": "Health Check",
+      "name": "1. System Health Check",
       "request": {
         "method": "GET",
         "header": [],
@@ -17,13 +40,18 @@
       }
     },
     {
-      "name": "Auth - Register",
+      "name": "2. Auth - Register",
       "request": {
         "method": "POST",
-        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
         "body": {
           "mode": "raw",
-          "raw": "{\"email\": \"user@example.com\", \"password\": \"secret123\"}"
+          "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/auth/register",
@@ -33,18 +61,272 @@
       }
     },
     {
-      "name": "Auth - Login",
+      "name": "3. Auth - Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.access_token) {",
+              "    pm.collectionVariables.set('token', jsonData.access_token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "POST",
-        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
         "body": {
           "mode": "raw",
-          "raw": "{\"email\": \"user@example.com\", \"password\": \"secret123\"}"
+          "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/auth/login",
           "host": ["{{baseUrl}}"],
           "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "4. Document Groups - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Computer Science Midterm 2026\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/document-groups",
+          "host": ["{{baseUrl}}"],
+          "path": ["document-groups"]
+        }
+      }
+    },
+    {
+      "name": "5. Document Groups - Get Details",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/document-groups/{{groupId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["document-groups", "{{groupId}}"]
+        }
+      }
+    },
+    {
+      "name": "6. Documents - Upload Question Paper",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "sample_documents/clean_question_paper.pdf"
+            },
+            {
+              "key": "doc_type",
+              "value": "question_paper",
+              "type": "text"
+            },
+            {
+              "key": "group_id",
+              "value": "{{groupId}}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/documents/upload",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "upload"]
+        }
+      }
+    },
+    {
+      "name": "7. Documents - Upload Answer Key",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "sample_documents/answer_key.pdf"
+            },
+            {
+              "key": "doc_type",
+              "value": "answer_key",
+              "type": "text"
+            },
+            {
+              "key": "group_id",
+              "value": "{{groupId}}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/documents/upload",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "upload"]
+        }
+      }
+    },
+    {
+      "name": "8. Documents - List All",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/documents",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents"]
+        }
+      }
+    },
+    {
+      "name": "9. Documents - Check Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/documents/{{docId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "{{docId}}", "status"]
+        }
+      }
+    },
+    {
+      "name": "10. Questions - List All",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/questions",
+          "host": ["{{baseUrl}}"],
+          "path": ["questions"]
+        }
+      }
+    },
+    {
+      "name": "11. Questions - Get Single Question",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/questions/{{questionId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["questions", "{{questionId}}"]
+        }
+      }
+    },
+    {
+      "name": "12. Answers - Get Question Answer",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/questions/{{questionId}}/answer",
+          "host": ["{{baseUrl}}"],
+          "path": ["questions", "{{questionId}}", "answer"]
+        }
+      }
+    },
+    {
+      "name": "13. Review Items - Get Flagged Items",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/review-items",
+          "host": ["{{baseUrl}}"],
+          "path": ["review-items"]
+        }
+      }
+    },
+    {
+      "name": "14. Documents - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/documents/{{docId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "{{docId}}"]
         }
       }
     }
